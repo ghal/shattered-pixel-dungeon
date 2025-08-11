@@ -976,6 +976,9 @@ public enum Talent {
 			case CLERIC:
 				Collections.addAll(tierTalents, SATIATED_SPELLS, HOLY_INTUITION, SEARING_LIGHT, SHIELD_OF_LIGHT);
 				break;
+			case ALCHEMIST:
+				Collections.addAll(tierTalents, EMPOWERING_MEAL, THIEFS_INTUITION, LINGERING_MAGIC, IRON_STOMACH);
+				break;
 		}
 		for (Talent talent : tierTalents){
 			if (replacements.containsKey(talent)){
@@ -1005,6 +1008,9 @@ public enum Talent {
 			case CLERIC:
 				Collections.addAll(tierTalents, ENLIGHTENING_MEAL, RECALL_INSCRIPTION, SUNRAY, DIVINE_SENSE, BLESS);
 				break;
+			case ALCHEMIST:
+				Collections.addAll(tierTalents, ENERGIZING_MEAL, RECALL_INSCRIPTION, ARCANE_VISION, SHIELD_BATTERY, WAND_PRESERVATION);
+				break;
 		}
 		for (Talent talent : tierTalents){
 			if (replacements.containsKey(talent)){
@@ -1033,6 +1039,9 @@ public enum Talent {
 				break;
 			case CLERIC:
 				Collections.addAll(tierTalents, CLEANSE, LIGHT_READING);
+				break;
+			case ALCHEMIST:
+				Collections.addAll(tierTalents, DESPERATE_POWER, LIGHT_READING);
 				break;
 		}
 		for (Talent talent : tierTalents){

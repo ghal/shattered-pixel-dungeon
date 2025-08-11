@@ -70,6 +70,7 @@ public class Badges {
 		MASTERY_HUNTRESS,
 		MASTERY_DUELIST,
 		MASTERY_CLERIC,
+		MASTERY_ALCHEMIST,
 		FOUND_RATMOGRIFY,
 
 		//bronze
@@ -805,6 +806,8 @@ public class Badges {
 		firstBossClassBadges.put(HeroClass.HUNTRESS, Badge.BOSS_SLAIN_1_HUNTRESS);
 		firstBossClassBadges.put(HeroClass.DUELIST, Badge.BOSS_SLAIN_1_DUELIST);
 		firstBossClassBadges.put(HeroClass.CLERIC, Badge.BOSS_SLAIN_1_CLERIC);
+        // Map Alchemist to Mage's first boss class badge to avoid nulls in progress display
+        firstBossClassBadges.put(HeroClass.ALCHEMIST, Badge.BOSS_SLAIN_1_MAGE);
 	}
 
 	private static LinkedHashMap<HeroClass, Badge> victoryClassBadges = new LinkedHashMap<>();
@@ -815,6 +818,8 @@ public class Badges {
 		victoryClassBadges.put(HeroClass.HUNTRESS, Badge.VICTORY_HUNTRESS);
 		victoryClassBadges.put(HeroClass.DUELIST, Badge.VICTORY_DUELIST);
 		victoryClassBadges.put(HeroClass.CLERIC, Badge.VICTORY_CLERIC);
+        // Map Alchemist to Mage's victory badge to avoid nulls in progress display
+        victoryClassBadges.put(HeroClass.ALCHEMIST, Badge.VICTORY_MAGE);
 	}
 
 	private static LinkedHashMap<HeroSubClass, Badge> thirdBossSubclassBadges = new LinkedHashMap<>();
@@ -952,6 +957,9 @@ public class Badges {
 				break;
 			case CLERIC:
 				badge = Badge.MASTERY_CLERIC;
+				break;
+			case ALCHEMIST:
+				badge = Badge.MASTERY_ALCHEMIST;
 				break;
 		}
 		

@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.Tri
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Challenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.ElementalStrike;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.duelist.Feint;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.Ratmogrify;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.NaturesPower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpectralBlades;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
@@ -51,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClothArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.AlchemistsToolkit;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
@@ -89,7 +91,8 @@ public enum HeroClass {
 	ROGUE( HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
 	HUNTRESS( HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
 	DUELIST( HeroSubClass.CHAMPION, HeroSubClass.MONK ),
-	CLERIC( HeroSubClass.PRIEST, HeroSubClass.PALADIN );
+		CLERIC( HeroSubClass.PRIEST, HeroSubClass.PALADIN ),
+		ALCHEMIST();
 
 	private HeroSubClass[] subClasses;
 
@@ -140,6 +143,10 @@ public enum HeroClass {
 			case CLERIC:
 				initCleric( hero );
 				break;
+
+				case ALCHEMIST:
+					initAlchemist( hero );
+					break;
 		}
 
 		if (SPDSettings.quickslotWaterskin()) {
@@ -167,6 +174,8 @@ public enum HeroClass {
 				return Badges.Badge.MASTERY_DUELIST;
 			case CLERIC:
 				return Badges.Badge.MASTERY_CLERIC;
+			case ALCHEMIST:
+				return Badges.Badge.MASTERY_ALCHEMIST;
 		}
 		return null;
 	}
@@ -260,6 +269,20 @@ public enum HeroClass {
 		new ScrollOfRemoveCurse().identify();
 	}
 
+	private static void initAlchemist( Hero hero ) {
+
+		(hero.belongings.weapon = new Dagger()).identify();
+
+		AlchemistsToolkit kit = new AlchemistsToolkit();
+		(hero.belongings.artifact = kit).identify();
+		hero.belongings.artifact.activate(hero);
+
+		Dungeon.quickslot.setSlot(0, kit);
+
+		new PotionOfPurity().identify();
+		new ScrollOfRemoveCurse().identify();
+	}
+
 	public String title() {
 		return Messages.get(HeroClass.class, name());
 	}
@@ -290,6 +313,8 @@ public enum HeroClass {
 				return new ArmorAbility[]{new Challenge(), new ElementalStrike(), new Feint()};
 			case CLERIC:
 				return new ArmorAbility[]{new AscendedForm(), new Trinity(), new PowerOfMany()};
+			case ALCHEMIST:
+				return new ArmorAbility[]{ new ElementalBlast(), new WildMagic(), new Ratmogrify() };
 		}
 	}
 
@@ -307,6 +332,9 @@ public enum HeroClass {
 				return Assets.Sprites.DUELIST;
 			case CLERIC:
 				return Assets.Sprites.CLERIC;
+			case ALCHEMIST:
+				// reuse mage spritesheet for now
+				return Assets.Sprites.MAGE;
 		}
 	}
 
@@ -324,6 +352,9 @@ public enum HeroClass {
 				return Assets.Splashes.DUELIST;
 			case CLERIC:
 				return Assets.Splashes.CLERIC;
+			case ALCHEMIST:
+				// reuse mage splash art for now
+				return Assets.Splashes.MAGE;
 		}
 	}
 	
@@ -344,6 +375,8 @@ public enum HeroClass {
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_DUELIST);
 			case CLERIC:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_CLERIC);
+			case ALCHEMIST:
+				return true;
 		}
 	}
 	
