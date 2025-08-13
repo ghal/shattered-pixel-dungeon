@@ -1134,6 +1134,14 @@ public abstract class Char extends Actor {
 		if (buff( Speed.class ) != null) {
 			timeScale *= 2.0f;
 		}
+		//minor slowdown when recently stepping in water
+		if (buff(com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WetFeet.class) != null) {
+			timeScale *= 0.85f;
+		}
+		//brief speed boost after picking up gold
+		if (buff(com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Windfall.class) != null) {
+			timeScale *= 1.25f;
+		}
 		
 		super.spend( time / timeScale );
 	}

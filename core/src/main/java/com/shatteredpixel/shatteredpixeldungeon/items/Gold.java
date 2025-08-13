@@ -67,6 +67,17 @@ public class Gold extends Item {
 		Badges.validateGoldCollected();
 
 		GameScene.pickUp( this, pos );
+
+		//brief positive speed effect on pickup, guarded to avoid crashes in edge cases
+		try {
+			com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff.prolong(
+				hero,
+				com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Windfall.class,
+				com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Windfall.DURATION
+			);
+		} catch (Throwable ignored) {
+			//never crash from buff application
+		}
 		hero.sprite.showStatusWithIcon( CharSprite.NEUTRAL, Integer.toString(quantity), FloatingText.GOLD );
 		hero.spendAndNext( TIME_TO_PICK_UP );
 		
