@@ -48,6 +48,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Drowsy;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Foresight;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.GreaterHaste;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.HeroDisguise;
+	import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Footing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.HoldFast;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
@@ -591,6 +592,12 @@ public class Hero extends Char {
 
 		if (belongings.armor() != null) {
 			evasion = belongings.armor().evasionFactor(this, evasion);
+		}
+
+		// Modest evasion bonus from footing buff; safe cap and rounding
+		Footing footing = buff(Footing.class);
+		if (footing != null) {
+			evasion += Math.max(1, Math.round(lvl * 0.15f));
 		}
 
 		return Math.max(1, Math.round(evasion));
@@ -1607,12 +1614,29 @@ public class Hero extends Char {
 
 		dmg = Math.round(damage);
 
+		// Pre-calc for Second Wind trigger. Use current effective HP state safely after mitigation above.
+		int effectiveHPBefore = HP + shielding();
+
 		//we ceil this one to avoid letting the player easily take 0 dmg from tenacity early
 		dmg = (int)Math.ceil(dmg * RingOfTenacity.damageMultiplier( this ));
 
 		int preHP = HP + shielding();
 		if (src instanceof Hunger) preHP -= shielding();
 		super.damage( dmg, src );
+
+		// Second Wind: on dropping below 30% HP from above that threshold, grant brief sustain and mitigation.
+		// Avoid triggering on Hunger or deferred damage, and respect an internal cooldown.
+		if (isAlive()
+			&& buff(com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SecondWindCooldown.class) == null
+			&& !(src instanceof com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger)
+			&& !(src instanceof com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Viscosity.DeferedDamage)) {
+			int effectiveHPAfter = HP + shielding();
+			int threshold = Math.round(HT * 0.3f);
+			if (effectiveHPBefore > threshold && effectiveHPAfter <= threshold) {
+				com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff.affect(this, com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SecondWind.class, com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SecondWind.DURATION);
+				com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff.affect(this, com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SecondWindCooldown.class, com.shatteredpixel.shatteredpixeldungeon.actors.buffs.SecondWindCooldown.DURATION);
+			}
+		}
 		int postHP = HP + shielding();
 		if (src instanceof Hunger) postHP -= shielding();
 		int effectiveDamage = preHP - postHP;
@@ -2261,6 +2285,12 @@ public class Hero extends Char {
 					Sample.INSTANCE.play(Assets.Sounds.TRAMPLE, 1, Random.Float( 0.96f, 1.05f ) );
 				} else {
 					Sample.INSTANCE.play( Assets.Sounds.GRASS, 1, Random.Float( 0.96f, 1.05f ) );
+				}
+				// Safe application of footing buff on natural ground
+				try {
+					Buff.affect(this, Footing.class, Footing.DURATION);
+				} catch (Throwable ignored) {
+					// never crash from buff application here
 				}
 			} else {
 				Sample.INSTANCE.play( Assets.Sounds.STEP, 1, Random.Float( 0.96f, 1.05f ) );

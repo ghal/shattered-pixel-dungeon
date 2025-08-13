@@ -66,6 +66,8 @@ public class Ring extends KindofMisc {
 			put("quartz",ItemSpriteSheet.RING_QUARTZ);
 			put("agate",ItemSpriteSheet.RING_AGATE);
 			put("diamond",ItemSpriteSheet.RING_DIAMOND);
+			// extra label to ensure we have at least as many labels as ring classes
+			put("pearl",ItemSpriteSheet.RING_QUARTZ);
 		}
 	};
 	
