@@ -780,6 +780,9 @@ public abstract class Char extends Actor {
 		if ( buff( Haste.class ) != null) speed *= 3f;
 		if ( buff( Dread.class ) != null) speed *= 2f;
 
+		//WetFeet applies a subtle slow, stacks multiplicatively with other effects
+		if ( buff( com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WetFeet.class ) != null) speed *= 0.85f;
+
 		speed *= Swiftness.speedBoost(this, glyphLevel(Swiftness.class));
 		speed *= Flow.speedBoost(this, glyphLevel(Flow.class));
 		speed *= Bulk.speedBoost(this, glyphLevel(Bulk.class));
@@ -1268,6 +1271,17 @@ public abstract class Char extends Actor {
 		}
 
 		pos = step;
+
+		//Apply a brief dampening effect after stepping into water (non-flying only)
+		try {
+			if (Dungeon.level != null && Dungeon.level.water != null && pos >= 0 && pos < Dungeon.level.water.length) {
+				if (Dungeon.level.water[pos] && !flying) {
+					Buff.prolong(this, com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WetFeet.class, com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WetFeet.DURATION);
+				}
+			}
+		} catch (Throwable ignored) {
+			//fail-safe: never crash from tile queries/buff application
+		}
 		
 		if (this != Dungeon.hero) {
 			sprite.visible = Dungeon.level.heroFOV[pos];
